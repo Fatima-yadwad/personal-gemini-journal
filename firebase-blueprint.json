@@ -1,0 +1,89 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Public user profile and settings",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "email"]
+    },
+    "JournalSession": {
+      "title": "JournalSession",
+      "description": "User journal reflection session and conversation turns",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "prompt": { "type": "string" },
+        "summary": { "type": "string" },
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "role": { "type": "string", "enum": ["user", "assistant"] },
+              "content": { "type": "string" },
+              "timestamp": { "type": "string" }
+            },
+            "required": ["id", "role", "content", "timestamp"]
+          }
+        },
+        "latestInsight": {
+          "type": "object",
+          "properties": {
+            "mood": { "type": "string" },
+            "keyThemes": { "type": "array", "items": { "type": "string" } },
+            "shortSummary": { "type": "string" },
+            "helpfulInsight": { "type": "string" },
+            "suggestedNextAction": { "type": "string" },
+            "confidence": { "type": "string" }
+          }
+        },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "title", "createdAt", "updatedAt"]
+    },
+    "MoodInsight": {
+      "title": "MoodInsight",
+      "description": "Extracted AI mood and reflection insight over time",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "sessionId": { "type": "string" },
+        "sessionTitle": { "type": "string" },
+        "mood": { "type": "string" },
+        "keyThemes": { "type": "array", "items": { "type": "string" } },
+        "shortSummary": { "type": "string" },
+        "helpfulInsight": { "type": "string" },
+        "suggestedNextAction": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "sessionId", "mood", "keyThemes", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile document owned by authenticated user"
+    },
+    "/users/{userId}/sessions/{sessionId}": {
+      "schema": "JournalSession",
+      "description": "Journal sessions strictly owned and isolated per user"
+    },
+    "/users/{userId}/insights/{insightId}": {
+      "schema": "MoodInsight",
+      "description": "Mood & insight metrics over time strictly isolated per user"
+    }
+  }
+}
